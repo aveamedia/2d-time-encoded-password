@@ -1,30 +1,40 @@
-# 2D time encoded password
+## "2D Time Encoded Password"
 
-## Reference implementation for a new conceptual implementation of a typed password.
+### Overview
 
-Conceptually, the user types characters as they would for any password.  As they are typing, the gaps of time in between the key strokes are measured and encoded as unicode characters in the unicode Private Use Area Block U+E000 - U+F8FF  https://unicodeplus.com/block/E000
+This document presents a novel concept for enhancing password security by introducing a temporal dimension to password entry. This approach involves measuring and encoding the time intervals between keystrokes as part of the password.
 
-This allows the user to tap a 'rhythmn' encoded by time along with their password. i.e. if someone looks over their shoulder or captures their password in a photo while they are typing it, the would be spy wouldn't capture the timbre or rhythmn of 'how' the pasword is typed, only 'what' was typed.  This addin a dimension of time to the complexity of a password.
+### Key Concept
 
-The Unicode character an offset from U+E001 plus the absolute value of the measured keystroke time in seconds divided by the user definable granularity.  i.e. if the granularity is set to 0.25 seconds, any keystroke gap length measured within the same quarter of one second will be considered the same length for the purposes of unicode encoding.  The count of the granularity is embedded in the password character string by the timer function resulting in a password similar to below:
+- **Basic Idea**: Alongside the traditional password characters, the system records the time gaps between each keystroke.
+- **Encoding Method**: These time intervals are converted into Unicode characters from the [Private Use Area Block (U+E000 - U+F8FF)](https://unicodeplus.com/block/E000).
 
-### Example
+### Purpose
 
-Password: Mike
+- **Enhanced Security**: This method adds a layer of security by incorporating the rhythm of typing. It counters risks such as shoulder surfing or photo capturing of keystrokes since it's not just about what is typed but also how it is typed in terms of timing.
 
-Rhythmn: M-1 second pause-i-0.25 second pause-i-0.25 second pause
-Granularity 0.25 seconds
+### Technical Implementation
 
-Resultant password: M[U+E004]i[U+E005]k[U+E006]e
+- **Granularity Setting**: The user can define the granularity of time measurement (e.g., 0.25 seconds). Keystrokes within the same time frame are encoded as the same Unicode character.
+- **Unicode Encoding**: The time between keystrokes is encoded as an offset from U+E001, based on the measured time and granularity.
+- **Password Example**:
+  - Traditional Password: "Mike"
+  - Typing Rhythm: M (1s pause) - i (0.25s pause) - k (0.25s pause) - e
+  - Granularity: 0.25 seconds
+  - Encoded Password: M[U+E004]i[U+E005]k[U+E006]e (with cumulative time tally) or M[U+E004]i[U+E001]k[U+E001]e (without cumulative time tally)
 
-It can also be encoded without the cumulative time tally
+### Compatibility and Use Cases
 
-Resultant password: M[U+E004]i[U+E001]k[U+E001]e
+- **Compatibility**: This scheme is compatible with any system supporting Unicode, such as HTTPS posts to APIs or databases that support Unicode characters in the Private Use Area Block.
+- **Fallback for Non-Unicode Systems**: For systems not supporting Unicode, a mapping function in the API can re-encode the time factor.
+- **Adjustable Granularity**: The granularity can be varied to suit different needs, e.g., shorter for automated systems, longer for users with challenges in maintaining a consistent typing rhythm.
 
-The scheme is plug and play with any existing Unicode capable transport mechanism (https post to an API for example), and any backend database that supports unicode characters in the Private Use Area Block.  In the case of a non Unicode compliant database, a mapping function in the API call for instance can be used to re-encode the time factor as needed.
+### Implementation Details
 
-All of the relevant code is in src\components\header.js.  This is not a library.  It's a hacked together working reference implementation from a Gatsby Template, compilable as a standalone electron app to illustrate a concept.  More documentation to follow...
+- **Source Code Location**: The implementation is in `src\components\header.js`.
+- **Nature of Implementation**: It's a reference implementation crafted from a Gatsby Template, not a library, and can be compiled as a standalone Electron app.
+- **Backspace Handling**: The system records the use of backspace, encoding it in the Private Use Area Block, allowing for strong passwords that are visibly blank.
 
-deleteContentBackward allows for the user to 'backspace' their password until it is visibly blank.  However the code keylogs the backspace and encodes it in the Private Use Area Block, effectively allowing for a visibly zero length strong password.
+### Future Directions
 
-Granularity can be adjusted to allow for different use cases.  Extremely short granularity for machine driven systems, longer for people with impediments to accurately typing a rhythymn.
+- **Further Documentation**: Additional documentation and enhancements are planned for this implementation.
