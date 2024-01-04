@@ -1,0 +1,13 @@
+{
+  "appId": "ca.avea.dimension4",
+  "appName": "dimension4",
+  "bundledWebRuntime": false,
+  "npmClient": "npm",
+  "webDir": "public",
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 0
+    }
+  },
+  "cordova": {}
+}
